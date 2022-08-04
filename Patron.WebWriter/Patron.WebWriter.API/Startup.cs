@@ -13,6 +13,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Text.Json.Serialization;
+using App.Metrics;
+using App.Metrics.Scheduling;
+using System;
+using System.Threading.Tasks;
+using App.Metrics.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Patron.WebWriter.API
 {
@@ -52,6 +58,9 @@ namespace Patron.WebWriter.API
                 automapper.UseEntityFrameworkCoreModel<ServiceDbContext>(serviceProvider);
             }, typeof(ServiceDbContext).Assembly);
 
+            services.AddMetricsTrackingMiddleware();
+            services.AddMvcCore().AddMetricsCore();
+
             services.AddControllers()
                     .AddNewtonsoftJson(options =>
                         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore).AddJsonOptions(opt =>
@@ -73,6 +82,12 @@ namespace Patron.WebWriter.API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMetricsApdexTrackingMiddleware();
+            app.UseMetricsRequestTrackingMiddleware();
+            app.UseMetricsErrorTrackingMiddleware();
+            app.UseMetricsActiveRequestMiddleware();
+            app.UseMetricsPostAndPutSizeTrackingMiddleware();
+            app.UseMetricsOAuth2TrackingMiddleware();
 
             if (env.IsDevelopment())
             {

@@ -14,7 +14,7 @@ using Patron.WebWriter.BI.Interfaces;
 namespace Patron.WebWriter.API.Controllers
 {
     [ApiController]
-    [Route("")]
+    [Route("habdler")]
     public class HandlerController : BaseController
     {
         private readonly ILogger<HandlerController> _logger;
