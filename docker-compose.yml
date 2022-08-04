@@ -1,0 +1,32 @@
+version: '3'
+
+networks:
+  api:
+      name: api
+      attachable: true
+  apps:
+    external: true
+  host:
+    driver: bridge
+
+services:
+  ip_api:
+    build:
+      context: .
+    depends_on:
+      - pg
+    restart: always
+    ports:
+      - '8091:80'
+    links:
+      - pg
+    networks:
+      - api
+      - host
+      - apps
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://127.0.0.1/alive"]
+      interval: 60s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
